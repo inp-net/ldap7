@@ -1,0 +1,11 @@
+dn: dc=inpt,dc=fr
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: inpt
+dc: inpt
+
+dn: ou=people,dc=inpt,dc=fr
+objectClass: top
+objectClass: organizationalUnit
+ou: people
