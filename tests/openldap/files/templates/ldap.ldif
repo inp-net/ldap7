@@ -1,3 +1,7 @@
+# inp-net LDAP bootstrap template
+# This file is used to bootstrap the LDAP server with the initial needed data
+# It is also used by the docker image to initialize the LDAP server
+
 dn: dc=inpt,dc=fr
 objectClass: top
 objectClass: dcObject
