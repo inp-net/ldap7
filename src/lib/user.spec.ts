@@ -3,7 +3,12 @@ import test from 'ava';
 import { LdapUser } from '../types/user';
 
 import Client from './client';
-import { deleteLdapUser, getLdapUser, hashPassword, upsertLdapUser } from './user';
+import {
+	deleteLdapUser,
+	getLdapUser,
+	hashPassword,
+	upsertLdapUser,
+} from './user';
 
 const client = Client.getInstance('hidden');
 
@@ -37,14 +42,9 @@ test.before(async () => {
 test.serial('An user can be created', async (t) => {
 	await upsertLdapUser(user);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { searchEntries } = await client.client.search(
-		`ou=people,${client.base_dn}`,
-		{
-			filter: `uid=${user.uid}`,
-		}
-	);
+	const { searchEntries } = await client.search(`ou=people`, {
+		filter: `uid=${user.uid}`,
+	});
 
 	t.is(searchEntries.length, 1, 'No user was created');
 
@@ -100,14 +100,9 @@ test.serial('An user can be updated', async (t) => {
 
 	await upsertLdapUser(updatedUser);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { searchEntries } = await client.client.search(
-		`ou=people,${client.base_dn}`,
-		{
-			filter: `uid=${updatedUser.uid}`,
-		}
-	);
+	const { searchEntries } = await client.search(`ou=people`, {
+		filter: `uid=${updatedUser.uid}`,
+	});
 
 	t.is(searchEntries.length, 1, 'User is gone ?!');
 
@@ -138,14 +133,9 @@ test.serial('An user can be updated', async (t) => {
 test.serial('An user can be deleted', async (t) => {
 	await deleteLdapUser(user.uid);
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const { searchEntries } = await client.client.search(
-		`ou=people,${client.base_dn}`,
-		{
-			filter: `uid=${user.uid}`,
-		}
-	);
+	const { searchEntries } = await client.search(`ou=people`, {
+		filter: `uid=${user.uid}`,
+	});
 
 	t.is(searchEntries.length, 0, 'User was not deleted');
 });

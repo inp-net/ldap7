@@ -1,30 +1,11 @@
 import cryptoRandomString from 'crypto-random-string';
 import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
-import { ILogObj, Logger } from 'tslog';
 
 import { LdapUser } from '../types/user';
 
 import Client from './client';
-
-/**
- * Get a sub logger
- *
- * @param logger
- * @param name
- */
-function getLogger(logger: Logger<ILogObj>, name: string) {
-	return logger.getSubLogger({ name });
-}
-
-/**
- * Check if the value is an array
- *
- * @param value
- */
-function isArray<T>(value: T[] | T): value is T[] {
-	return Array.isArray(value);
-}
+import { getLogger, isArray } from './utils';
 
 /**
  * Find the next available UID number using a binary search
