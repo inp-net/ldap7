@@ -1,4 +1,11 @@
-import { ClientOptions, Client as ldaptsClient } from 'ldapts';
+import {
+	ClientOptions,
+	Control,
+	DN,
+	Client as ldaptsClient,
+	SearchOptions,
+	SearchResult,
+} from 'ldapts';
 import { ILogObj, Logger } from 'tslog';
 
 class Client {
@@ -57,7 +64,7 @@ class Client {
 	 * @param bind_password
 	 * @param base_dn
 	 */
-	async setup(
+	public async setup(
 		option: ClientOptions,
 		bind_cn: string,
 		bind_password: string,
@@ -75,7 +82,7 @@ class Client {
 	/**
 	 * Connect to the ldap server
 	 */
-	async connect() {
+	public async connect() {
 		if (!this.client) {
 			throw new Error('Client is not initialized');
 		}
@@ -90,12 +97,34 @@ class Client {
 	/**
 	 * Disconnect from the ldap server
 	 */
-	async disconnect() {
+	public async disconnect() {
 		if (!this.client) {
 			throw new Error('Client is not initialized');
 		}
 
 		await this.client.unbind();
+	}
+
+	/**
+	 * Do a ldap search if client is initialized
+	 * @param DN
+	 * @param options
+	 * @param controls
+	 */
+	public async search(
+		DN: DN | string,
+		options?: SearchOptions,
+		controls?: Control | Control[]
+	): Promise<SearchResult> {
+		if (!this.client) {
+			throw new Error('Client is not initialized');
+		}
+
+		return await this.client.search(
+			`${DN},${this.base_dn}`,
+			options,
+			controls
+		);
 	}
 }
 
