@@ -8,7 +8,7 @@ class Client {
 	logger: Logger<ILogObj>;
 
 	private constructor(logs: 'pretty' | 'json' | 'hidden') {
-		this.logger = new Logger({ type: logs, name: 'LDAP7' });
+		this.logger = new Logger({ type: logs, name: 'ldap7' });
 	}
 
 	/**

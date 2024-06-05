@@ -1,5 +1,5 @@
 import cryptoRandomString from 'crypto-random-string';
-import { Attribute, Change } from 'ldapts';
+import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 import { ILogObj, Logger } from 'tslog';
 
@@ -62,7 +62,25 @@ async function findNextUidNumber(
 }
 
 /**
+ * Hash a password using SHA-512
+ * Crypt(3) format is used
+ *
+ * @param password
+ */
+function hashPassword(password: string): string {
+	return `{CRYPT}${sha512.crypt(
+		password,
+		cryptoRandomString({ length: 16 })
+	)}`;
+}
+
+/**
  * Upsert a user in the LDAP server
+ *
+ * If the user does not exist, it will be created. If no school is provided,
+ * the user will be created with a home directory in /tmp and a shell set to
+ * /bin/none. If a school is provided, the user will be created with a home
+ * and /bin/bash shell. If the user already exists, it will be updated.
  * @param ldapUser
  */
 async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
@@ -188,6 +206,17 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 					})
 				);
 			}
+
+			if (ldapUser.sshKeys !== undefined && ldapUser.sshKeys.length > 0)
+				changes.push(
+					new Change({
+						operation: 'replace',
+						modification: new Attribute({
+							type: 'sshPublicKey',
+							values: ldapUser.sshKeys,
+						}),
+					})
+				);
 		}
 
 		if (ldapUser.picture)
@@ -200,14 +229,6 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 					}),
 				})
 			);
-
-		// new Change({
-		// 	operation: 'replace',
-		// 	modification: new Attribute({
-		// 		type: 'organizationalUnitName',
-		// 		values: ldapUser.school,
-		// 	}),
-		// }),
 
 		await client.modify(
 			`uid=${ldapUser.uid},ou=people,${base_dn}`,
@@ -338,16 +359,42 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 }
 
 /**
- * Hash a password using SHA-512
- * Crypt(3) format is used
+ * Get a user from the LDAP server
  *
- * @param password
+ * Currently, this function return only the ldap response, if needed a mapping
+ * could be done to return a more user-friendly object.
+ *
+ * @param uid
  */
-function hashPassword(password: string): string {
-	return `{CRYPT}${sha512.crypt(
-		password,
-		cryptoRandomString({ length: 16 })
-	)}`;
+async function getUser(uid: string): Promise<Entry | null> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'User');
+
+	logger.info(`Getting user ${uid}`);
+	const { searchEntries } = await client.search(`ou=people,${base_dn}`, {
+		filter: `uid=${uid}`,
+	});
+
+	if (searchEntries.length === 0) return null;
+
+	const user = searchEntries[0];
+	delete user.userPassword; // remove hashed password from the response
+
+	return user;
 }
 
-export { upsertLdapUser, hashPassword };
+/**
+ * Delete a user from the LDAP server
+ *
+ * @param uid
+ */
+async function deleteUser(uid: string): Promise<void> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'User');
+
+	logger.info(`Removing user ${uid}`);
+	await client.del(`uid=${uid},ou=people,${base_dn}`);
+	logger.info(`User ${uid} removed`);
+}
+
+export { upsertLdapUser, getUser, deleteUser, hashPassword };
