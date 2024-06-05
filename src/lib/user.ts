@@ -366,7 +366,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
  *
  * @param uid
  */
-async function getUser(uid: string): Promise<Entry | null> {
+async function getLdapUser(uid: string): Promise<Entry | null> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
@@ -388,7 +388,7 @@ async function getUser(uid: string): Promise<Entry | null> {
  *
  * @param uid
  */
-async function deleteUser(uid: string): Promise<void> {
+async function deleteLdapUser(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
@@ -397,4 +397,4 @@ async function deleteUser(uid: string): Promise<void> {
 	logger.info(`User ${uid} removed`);
 }
 
-export { upsertLdapUser, getUser, deleteUser, hashPassword };
+export { LdapUser, upsertLdapUser, getLdapUser, deleteLdapUser, hashPassword };

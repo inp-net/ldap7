@@ -3,7 +3,7 @@ import test from 'ava';
 import { LdapUser } from '../types/user';
 
 import Client from './client';
-import { deleteUser, getUser, hashPassword, upsertLdapUser } from './user';
+import { deleteLdapUser, getLdapUser, hashPassword, upsertLdapUser } from './user';
 
 const client = Client.getInstance('hidden');
 
@@ -71,7 +71,7 @@ test.serial('An user can be created', async (t) => {
 });
 
 test.serial('An user can be retrieved', async (t) => {
-	const retrievedUser = await getUser(user.uid);
+	const retrievedUser = await getLdapUser(user.uid);
 
 	t.assert(retrievedUser, 'User was not found');
 	t.like(
@@ -136,7 +136,7 @@ test.serial('An user can be updated', async (t) => {
 });
 
 test.serial('An user can be deleted', async (t) => {
-	await deleteUser(user.uid);
+	await deleteLdapUser(user.uid);
 
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
