@@ -36,15 +36,57 @@ async function createLdapSchool(uid: string): Promise<void> {
 			objectClass: ['organization'],
 			o: uid,
 		});
+		await createSchoolLayout(uid);
 		logger.info(`School ${uid} created`);
 	}
 
 	logger.info(`School ${uid} already exists`);
 }
 
+/**
+ * Create the base layout for a school in LDAP
+ * @param uid
+ */
+async function createSchoolLayout(uid: string): Promise<void> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'School');
+	logger.info(`Creating layout for school ${uid}`);
+
+	logger.info(`Creating ou=groups in school ${uid}`);
+	await client.add(`ou=groups,o=${uid},${base_dn}`, {
+		objectClass: ['organizationalUnit'],
+		ou: 'groups',
+	});
+
+	logger.info(`School ${uid} layout created`);
+}
+
+/**
+ * Cleanup a school in LDAP
+ * @param uid
+ */
+async function cleanupSchool(uid: string): Promise<void> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'School');
+	logger.info(`Cleaning up school ${uid}`);
+
+	logger.info(`Deleting groups in school ${uid}`);
+	// @TODO: delete groups
+	logger.info(`Deleting ou=groups in school ${uid}`);
+	await client.del(`ou=groups,o=${uid},${base_dn}`);
+
+	logger.info(`School ${uid} cleaned up`);
+}
+
+/**
+ * Delete a school in LDAP
+ * @param uid
+ */
 async function deleteLdapSchool(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'School');
+
+	await cleanupSchool(uid);
 
 	logger.info(`Trying to delete school ${uid}`);
 	await client.del(`o=${uid},${base_dn}`);

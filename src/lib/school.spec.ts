@@ -4,7 +4,7 @@ import { ResultCodeError } from 'ldapts';
 import Client from './client';
 import { createLdapSchool, deleteLdapSchool } from './school';
 
-const client = Client.getInstance('hidden');
+const client = Client.getInstance('pretty');
 
 test.before(async () => {
 	await client.setup(
@@ -21,7 +21,9 @@ test.before(async () => {
 test.serial('A school can be created', async (t) => {
 	await createLdapSchool('n7');
 
-	const { searchEntries } = await client.search('o=n7');
+	const { searchEntries } = await client.search('o=n7', {
+		filter: '(objectClass=organization)',
+	});
 
 	t.is(searchEntries.length, 1, 'No school was created');
 	t.is(
@@ -29,12 +31,23 @@ test.serial('A school can be created', async (t) => {
 		'n7',
 		'The school was not created with the correct uid'
 	);
+
+	// we also check the layout of the school
+	const { searchEntries: groups } = await client.search('ou=groups,o=n7');
+	t.is(groups.length, 1, 'No groups ou was created');
+	t.is(
+		groups[0].ou,
+		'groups',
+		'The groups ou was not created with the correct uid'
+	);
 });
 
 test.serial('A school can be created only once', async (t) => {
 	await createLdapSchool('n7');
 
-	const { searchEntries } = await client.search('o=n7');
+	const { searchEntries } = await client.search('o=n7', {
+		filter: '(objectClass=organization)',
+	});
 
 	t.is(searchEntries.length, 1, 'School was created multiple times');
 });
