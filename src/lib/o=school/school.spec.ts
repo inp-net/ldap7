@@ -1,8 +1,9 @@
 import test from 'ava';
 import { ResultCodeError } from 'ldapts';
 
-import Client from './client';
-import { upsertLdapGroup } from './group';
+import Client from '../client';
+
+import { upsertLdapGroup } from './ou=groups/group';
 import { createLdapSchool, deleteLdapSchool } from './school';
 
 const client = Client.getInstance('hidden');

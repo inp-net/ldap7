@@ -2,10 +2,9 @@ import cryptoRandomString from 'crypto-random-string';
 import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 
-import { LdapUser } from '../types/user';
-
-import Client from './client';
-import { getLogger, isArray } from './utils';
+import { LdapUser } from '../../types/user';
+import Client from '../client';
+import { getLogger, isArray } from '../utils';
 
 /**
  * Find the next available UID number using a binary search

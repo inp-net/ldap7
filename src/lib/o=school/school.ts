@@ -1,7 +1,7 @@
 import { Entry, ResultCodeError } from 'ldapts';
 
-import Client from './client';
-import { getLogger } from './utils';
+import Client from '../client';
+import { getLogger } from '../utils';
 
 /**
  * Create a new school in LDAP if it does not exist
