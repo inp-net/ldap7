@@ -1,12 +1,29 @@
 {
 	"name": "ldap7",
+	"author": {
+		"email": "contact@net7.dev",
+		"name": "net7 / INP-net members",
+		"url": "https://net7.dev"
+	},
+	"contributors": [
+		{
+			"name": "LeGmask",
+			"email": "dreumonte@bde.enseeiht.fr",
+			"url": "https://github.com/LeGmask"
+		}
+	],
 	"packageManager": "yarn@4.2.2",
 	"version": "1.0.0",
 	"description": "ldapts wrapper",
-	"main": "build/main/index.js",
-	"typings": "build/main/index.d.ts",
 	"module": "build/module/index.js",
-	"repository": "https://github.com/LeGmask/ldap7",
+	"homepage": "https://git.inpt.fr/inp-net/ldap7",
+	"bugs": {
+		"url": "https://git.inpt.fr/inp-net/ldap7/-/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://git.inpt.fr/inp-net/ldap7"
+	},
 	"license": "MIT",
 	"keywords": [],
 	"scripts": {
@@ -104,13 +121,33 @@
 		]
 	},
 	"exports": {
-		"types": "./src/index.ts",
-		"development": "./src/index.ts",
-		"default": "./build/index.js",
-		"user": {
-			"types": "./src/index.ts",
-			"development": "./src/index.ts",
-			"default": "./build/index.js"
+		".": {
+			"import": {
+				"default": "./build/module/client.js",
+				"require": "./build/main/client.js",
+				"types": "./build/module/client.d.ts"
+			}
+		},
+		"./user": {
+			"import": {
+				"default": "./build/module/lib/ou=people/user.js",
+				"require": "./build/main/lib/ou=people/user.js",
+				"types": "./build/module/lib/ou=people/user.d.ts"
+			}
+		},
+		"./school": {
+			"import": {
+				"default": "./build/module/lib/o=school/school.js",
+				"require": "./build/main/lib/o=school/school.js",
+				"types": "./build/module/lib/o=school/school.d.ts"
+			}
+		},
+		"./group": {
+			"import": {
+				"default": "./build/module/lib/o=school/ou=groups/group.js",
+				"require": "./build/main/lib/o=school/ou=groups/group.js",
+				"types": "./build/module/lib/o=school/ou=groups/group.d.ts"
+			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import Client from '../../client';
+import Client from '../../../client';
 import { createLdapSchool, deleteLdapSchool } from '../school';
 
 import {
