@@ -8,7 +8,7 @@ import {
 } from 'ldapts';
 import { ILogObj, Logger } from 'tslog';
 
-class Client {
+export class Client {
 	static #instance: Client;
 	client: ldaptsClient | undefined;
 	base_dn: string | undefined;
@@ -127,5 +127,3 @@ class Client {
 		);
 	}
 }
-
-export default Client;

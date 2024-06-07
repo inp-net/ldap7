@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import Client from '../../client';
+import { Client } from '../../client';
 import { LdapUser } from '../../types/user';
 
 import {

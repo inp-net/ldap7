@@ -1,6 +1,6 @@
 import { Attribute, Change, Entry, ResultCodeError } from 'ldapts';
 
-import Client from '../../../client';
+import { Client } from '../../../client';
 import { LdapGroup } from '../../../types/group';
 import { getLogger } from '../../utils';
 

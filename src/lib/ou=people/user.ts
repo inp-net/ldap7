@@ -2,7 +2,7 @@ import cryptoRandomString from 'crypto-random-string';
 import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 
-import Client from '../../client';
+import { Client } from '../../client';
 import { LdapUser } from '../../types/user';
 import { getLogger, isArray } from '../utils';
 

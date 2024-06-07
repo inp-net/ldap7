@@ -1,6 +1,6 @@
 import { Entry, ResultCodeError } from 'ldapts';
 
-import Client from '../../client';
+import { Client } from '../../client';
 import { getLogger } from '../utils';
 
 /**
