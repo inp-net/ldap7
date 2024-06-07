@@ -38,7 +38,7 @@ class Client {
 	 */
 	public static getClient() {
 		if (!Client.#instance || !Client.#instance.client) {
-			throw new Error('Client is not initialized');
+			throw new Error('LDAP Client is not initialized');
 		}
 
 		if (!Client.#instance.base_dn) {
@@ -46,7 +46,7 @@ class Client {
 		}
 
 		if (!Client.#instance.client.isConnected) {
-			throw new Error('Client is not connected');
+			throw new Error('LDAP Client is not connected');
 		}
 
 		return {
@@ -84,7 +84,7 @@ class Client {
 	 */
 	public async connect() {
 		if (!this.client) {
-			throw new Error('Client is not initialized');
+			throw new Error('LDAP Client is not initialized');
 		}
 
 		if (this.client.isConnected) {
@@ -99,7 +99,7 @@ class Client {
 	 */
 	public async disconnect() {
 		if (!this.client) {
-			throw new Error('Client is not initialized');
+			throw new Error('LDAP Client is not initialized');
 		}
 
 		await this.client.unbind();
@@ -117,7 +117,7 @@ class Client {
 		controls?: Control | Control[]
 	): Promise<SearchResult> {
 		if (!this.client) {
-			throw new Error('Client is not initialized');
+			throw new Error('LDAP Client is not initialized');
 		}
 
 		return await this.client.search(
