@@ -368,6 +368,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@inp-net/ldap7@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@inp-net/ldap7@workspace:."
+  dependencies:
+    "@ava/typescript": "npm:^1.1.1"
+    "@istanbuljs/nyc-config-typescript": "npm:^1.0.1"
+    "@typescript-eslint/eslint-plugin": "npm:^4.0.1"
+    "@typescript-eslint/parser": "npm:^4.0.1"
+    ava: "npm:^3.12.1"
+    codecov: "npm:^3.5.0"
+    crypto-random-string: "npm:3.3.1"
+    cz-conventional-changelog: "npm:^3.3.0"
+    eslint: "npm:^7.8.0"
+    eslint-config-prettier: "npm:^6.11.0"
+    eslint-plugin-eslint-comments: "npm:^3.2.0"
+    eslint-plugin-functional: "npm:^3.0.2"
+    eslint-plugin-import: "npm:^2.22.0"
+    ldapts: "npm:^7.0.12"
+    npm-run-all: "npm:^4.1.5"
+    nyc: "npm:^15.1.0"
+    open-cli: "npm:^6.0.1"
+    prettier: "npm:^2.1.1"
+    sha512-crypt-ts: "npm:^0.1.27"
+    standard-version: "npm:^9.0.0"
+    ts-node: "npm:^9.0.0"
+    tslog: "npm:^4.9.2"
+    typedoc: "npm:^0.19.0"
+    typescript: "npm:^4.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -4514,37 +4545,6 @@ __metadata:
   checksum: 10c0/6219631d8651467c54c58ef1b5d5c5c53e146f5ae2b0ecbb78b202da3eaad55b05b043db2d2d6f1d4230ee071b2ae8c2f85089e01377e4338bad97fa76a963b7
   languageName: node
   linkType: hard
-
-"ldap7@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "ldap7@workspace:."
-  dependencies:
-    "@ava/typescript": "npm:^1.1.1"
-    "@istanbuljs/nyc-config-typescript": "npm:^1.0.1"
-    "@typescript-eslint/eslint-plugin": "npm:^4.0.1"
-    "@typescript-eslint/parser": "npm:^4.0.1"
-    ava: "npm:^3.12.1"
-    codecov: "npm:^3.5.0"
-    crypto-random-string: "npm:3.3.1"
-    cz-conventional-changelog: "npm:^3.3.0"
-    eslint: "npm:^7.8.0"
-    eslint-config-prettier: "npm:^6.11.0"
-    eslint-plugin-eslint-comments: "npm:^3.2.0"
-    eslint-plugin-functional: "npm:^3.0.2"
-    eslint-plugin-import: "npm:^2.22.0"
-    ldapts: "npm:^7.0.12"
-    npm-run-all: "npm:^4.1.5"
-    nyc: "npm:^15.1.0"
-    open-cli: "npm:^6.0.1"
-    prettier: "npm:^2.1.1"
-    sha512-crypt-ts: "npm:^0.1.27"
-    standard-version: "npm:^9.0.0"
-    ts-node: "npm:^9.0.0"
-    tslog: "npm:^4.9.2"
-    typedoc: "npm:^0.19.0"
-    typescript: "npm:^4.0.2"
-  languageName: unknown
-  linkType: soft
 
 "ldapts@npm:^7.0.12":
   version: 7.0.12

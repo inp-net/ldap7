@@ -1,5 +1,5 @@
 {
-	"name": "ldap7",
+	"name": "@inp-net/ldap7",
 	"author": {
 		"email": "contact@net7.dev",
 		"name": "net7 / INP-net members",
@@ -12,10 +12,11 @@
 			"url": "https://github.com/LeGmask"
 		}
 	],
+	"private": false,
 	"packageManager": "yarn@4.2.2",
 	"version": "1.0.0",
 	"description": "ldapts wrapper",
-	"module": "build/module/index.js",
+	"module": "build/module/client.js",
 	"homepage": "https://git.inpt.fr/inp-net/ldap7",
 	"bugs": {
 		"url": "https://git.inpt.fr/inp-net/ldap7/-/issues"

@@ -1,7 +1,7 @@
 import test from 'ava';
 
-import { LdapUser } from '../../types/user';
 import Client from '../../client';
+import { LdapUser } from '../../types/user';
 
 import {
 	deleteLdapUser,
