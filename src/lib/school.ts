@@ -25,6 +25,7 @@ async function createLdapSchool(uid: string): Promise<void> {
 	} catch (error) {
 		const ldapError = error as ResultCodeError;
 
+		// 32 is the error code for "no such object"
 		if (ldapError.code !== 32) {
 			throw error;
 		}
@@ -71,7 +72,15 @@ async function cleanupSchool(uid: string): Promise<void> {
 	logger.info(`Cleaning up school ${uid}`);
 
 	logger.info(`Deleting groups in school ${uid}`);
-	// @TODO: delete groups
+	const { searchEntries } = await client.search(
+		`ou=groups,o=${uid},${base_dn}`,
+		{
+			filter: '(objectClass=posixGroup)',
+		}
+	);
+	for (const entry of searchEntries) {
+		await client.del(entry.dn);
+	}
 	logger.info(`Deleting ou=groups in school ${uid}`);
 	await client.del(`ou=groups,o=${uid},${base_dn}`);
 

@@ -2,9 +2,10 @@ import test from 'ava';
 import { ResultCodeError } from 'ldapts';
 
 import Client from './client';
+import { upsertLdapGroup } from './group';
 import { createLdapSchool, deleteLdapSchool } from './school';
 
-const client = Client.getInstance('pretty');
+const client = Client.getInstance('hidden');
 
 test.before(async () => {
 	await client.setup(
@@ -53,6 +54,18 @@ test.serial('A school can be created only once', async (t) => {
 });
 
 test.serial('A school can be deleted', async (t) => {
+	// create some groups in the school
+	await upsertLdapGroup({
+		name: 'net7-n7',
+		gidNumber: 1001,
+		school: 'n7',
+	});
+	await upsertLdapGroup({
+		name: 'net8-n7',
+		gidNumber: 1002,
+		school: 'n7',
+	});
+
 	await deleteLdapSchool('n7');
 
 	const error = (await t.throwsAsync(
