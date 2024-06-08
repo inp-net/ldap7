@@ -1,0 +1,6 @@
+[submodule "tests/openldap/--force"]
+	path = tests/openldap/--force
+	url = git@git.inpt.fr:inp-net/conf_ldap.git
+[submodule "tests/openldap/conf_ldap"]
+	path = tests/openldap/conf_ldap
+	url = git@git.inpt.fr:inp-net/conf_ldap.git

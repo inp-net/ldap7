@@ -6,6 +6,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     slapd \
     ssl-cert
 
+COPY conf_ldap /etc/ldap
 COPY files /
 
 EXPOSE 389 636

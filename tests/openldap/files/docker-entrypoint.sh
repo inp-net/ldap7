@@ -3,8 +3,12 @@
 # Remove old configuration
 rm -rf /var/lib/ldap/* || true
 
+# Generate slapd.conf
+/etc/ldap/utils/update-conf.sh
+
 # Import templates
-slapadd -v -n 1 -l /templates/ldap.ldif -f /etc/ldap/slapd.conf
+/etc/ldap/utils/bootstrap.sh
+
 
 # Start slapd
 /usr/sbin/slapd -d3 -s trace -f /etc/ldap/slapd.conf
