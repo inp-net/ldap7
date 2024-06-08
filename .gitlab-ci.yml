@@ -26,6 +26,9 @@ variables:
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
 
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_FORCE_HTTPS: "true"
+
 before_script:
     - until docker info; do sleep 1; done # ugly fix see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27384
 
