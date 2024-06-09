@@ -13,7 +13,7 @@
 		}
 	],
 	"packageManager": "yarn@4.2.2",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "ldapts wrapper",
 	"module": "build/module/client.js",
 	"homepage": "https://git.inpt.fr/inp-net/ldap7",
