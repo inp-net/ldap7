@@ -138,16 +138,16 @@
 		},
 		"./school": {
 			"import": {
-				"default": "./build/module/lib/o=school/school.js",
-				"require": "./build/main/lib/o=school/school.js",
-				"types": "./build/module/lib/o=school/school.d.ts"
+				"default": "./build/module/lib/ou=schools/school.js",
+				"require": "./build/main/lib/ou=schools/school.js",
+				"types": "./build/module/lib/ou=schools/school.d.ts"
 			}
 		},
 		"./group": {
 			"import": {
-				"default": "./build/module/lib/o=school/ou=groups/group.js",
-				"require": "./build/main/lib/o=school/ou=groups/group.js",
-				"types": "./build/module/lib/o=school/ou=groups/group.d.ts"
+				"default": "./build/module/lib/ou=schools/ou=groups/group.js",
+				"require": "./build/main/lib/ou=schools/ou=groups/group.js",
+				"types": "./build/module/lib/ou=schools/ou=groups/group.d.ts"
 			}
 		}
 	}
