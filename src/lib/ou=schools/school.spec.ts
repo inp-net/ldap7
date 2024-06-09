@@ -13,7 +13,7 @@ test.before(async () => {
 		{
 			url: 'ldap://localhost:389',
 		},
-		'cn=Manager',
+		'uid=churros,ou=services',
 		'ldapdev',
 		'dc=inpt,dc=fr'
 	);
@@ -23,7 +23,7 @@ test.before(async () => {
 test.serial('A school can be created', async (t) => {
 	await createLdapSchool('n7');
 
-	const { searchEntries } = await client.search('o=n7', {
+	const { searchEntries } = await client.search('o=n7,ou=schools', {
 		filter: '(objectClass=organization)',
 	});
 
@@ -35,7 +35,9 @@ test.serial('A school can be created', async (t) => {
 	);
 
 	// we also check the layout of the school
-	const { searchEntries: groups } = await client.search('ou=groups,o=n7');
+	const { searchEntries: groups } = await client.search(
+		'ou=groups,o=n7,ou=schools'
+	);
 	t.is(groups.length, 1, 'No groups ou was created');
 	t.is(
 		groups[0].ou,
@@ -47,7 +49,7 @@ test.serial('A school can be created', async (t) => {
 test.serial('A school can be created only once', async (t) => {
 	await createLdapSchool('n7');
 
-	const { searchEntries } = await client.search('o=n7', {
+	const { searchEntries } = await client.search('o=n7,ou=schools', {
 		filter: '(objectClass=organization)',
 	});
 
@@ -71,7 +73,7 @@ test.serial('A school can be deleted', async (t) => {
 
 	const error = (await t.throwsAsync(
 		async () => {
-			await client.search(`o=n7`);
+			await client.search(`o=n7,ou=schools`);
 		},
 		{ instanceOf: Error }
 	)) as ResultCodeError;

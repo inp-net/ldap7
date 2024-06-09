@@ -16,7 +16,7 @@ test.before(async () => {
 		{
 			url: 'ldap://localhost:389',
 		},
-		'cn=Manager',
+		'uid=churros,ou=services',
 		'ldapdev',
 		'dc=inpt,dc=fr'
 	);
@@ -32,7 +32,7 @@ test.serial('A group can be upserted', async (t) => {
 	});
 
 	const { searchEntries: createdGroup } = await client.search(
-		'ou=groups,o=inp',
+		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
 		}
@@ -57,7 +57,7 @@ test.serial('A group can be upserted', async (t) => {
 	});
 
 	const { searchEntries: updatedGroup } = await client.search(
-		'ou=groups,o=inp',
+		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
 		}
@@ -82,7 +82,7 @@ test.serial('A group can be upserted', async (t) => {
 	});
 
 	const { searchEntries: updatedTwiceGroup } = await client.search(
-		'ou=groups,o=inp',
+		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
 		}
@@ -103,9 +103,12 @@ test.serial('A group can be upserted', async (t) => {
 test.serial('A member can be added to a group', async (t) => {
 	await addMemberToLdapGroup('astleyr', 'inp-net-inp', 'inp');
 
-	const { searchEntries: group } = await client.search('ou=groups,o=inp', {
-		filter: '(objectClass=posixGroup)',
-	});
+	const { searchEntries: group } = await client.search(
+		'ou=groups,o=inp,ou=schools',
+		{
+			filter: '(objectClass=posixGroup)',
+		}
+	);
 
 	t.is(group[0].memberUid, 'astleyr', 'Member was not added to the group');
 });
@@ -113,9 +116,12 @@ test.serial('A member can be added to a group', async (t) => {
 test.serial('A group can be deleted', async (t) => {
 	await deleteLdapGroup('inp-net-inp', 'inp');
 
-	const { searchEntries } = await client.search('ou=groups,o=inp', {
-		filter: '(objectClass=posixGroup)',
-	});
+	const { searchEntries } = await client.search(
+		'ou=groups,o=inp,ou=schools',
+		{
+			filter: '(objectClass=posixGroup)',
+		}
+	);
 
 	t.is(searchEntries.length, 0, 'Group was not deleted');
 });

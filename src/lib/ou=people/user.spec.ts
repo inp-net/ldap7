@@ -32,7 +32,7 @@ test.before(async () => {
 		{
 			url: 'ldap://localhost:389',
 		},
-		'cn=Manager',
+		'uid=churros,ou=services',
 		'ldapdev',
 		'dc=inpt,dc=fr'
 	);

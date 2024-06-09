@@ -15,7 +15,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 
 	try {
 		const { searchEntries: entries } = await client.search(
-			`cn=${group.name},ou=groups,o=${group.school},${base_dn}`
+			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`
 		);
 		searchEntries.push(...entries);
 	} catch (error) {
@@ -31,7 +31,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 		logger.info(`Group ${group.name} already exists, updating`);
 
 		await client.modify(
-			`cn=${group.name},ou=groups,o=${group.school},${base_dn}`,
+			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`,
 			[
 				new Change({
 					operation: 'replace',
@@ -69,7 +69,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 			);
 
 		await client.add(
-			`cn=${group.name},ou=groups,o=${group.school},${base_dn}`,
+			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`,
 			ldapGroup
 		);
 	}
@@ -87,15 +87,18 @@ async function addMemberToLdapGroup(
 	const logger = getLogger(parentLogger, 'Group');
 
 	logger.info(`Adding user ${uid} to group ${group}`);
-	await client.modify(`cn=${group},ou=groups,o=${school},${base_dn}`, [
-		new Change({
-			operation: 'add',
-			modification: new Attribute({
-				type: 'memberUid',
-				values: [uid],
+	await client.modify(
+		`cn=${group},ou=groups,o=${school},ou=schools,${base_dn}`,
+		[
+			new Change({
+				operation: 'add',
+				modification: new Attribute({
+					type: 'memberUid',
+					values: [uid],
+				}),
 			}),
-		}),
-	]);
+		]
+	);
 }
 
 /**
@@ -109,7 +112,7 @@ async function deleteLdapGroup(cn: string, school: string) {
 	const logger = getLogger(parentLogger, 'Group');
 
 	logger.info(`Deleting group ${cn}`);
-	await client.del(`cn=${cn},ou=groups,o=${school},${base_dn}`);
+	await client.del(`cn=${cn},ou=groups,o=${school},ou=schools,${base_dn}`);
 }
 
 export { LdapGroup, upsertLdapGroup, addMemberToLdapGroup, deleteLdapGroup };

@@ -19,7 +19,7 @@ async function createLdapSchool(uid: string): Promise<void> {
 
 	try {
 		const { searchEntries: entries } = await client.search(
-			`o=${uid},${base_dn}`
+			`o=${uid},ou=schools,${base_dn}`
 		);
 		searchEntries.push(...entries);
 	} catch (error) {
@@ -33,7 +33,7 @@ async function createLdapSchool(uid: string): Promise<void> {
 
 	if (searchEntries.length === 0) {
 		logger.info(`School ${uid} does not exist, creating`);
-		await client.add(`o=${uid},${base_dn}`, {
+		await client.add(`o=${uid},ou=schools,${base_dn}`, {
 			objectClass: ['organization'],
 			o: uid,
 		});
@@ -54,7 +54,7 @@ async function createSchoolLayout(uid: string): Promise<void> {
 	logger.info(`Creating layout for school ${uid}`);
 
 	logger.info(`Creating ou=groups in school ${uid}`);
-	await client.add(`ou=groups,o=${uid},${base_dn}`, {
+	await client.add(`ou=groups,o=${uid},ou=schools,${base_dn}`, {
 		objectClass: ['organizationalUnit'],
 		ou: 'groups',
 	});
@@ -73,7 +73,7 @@ async function cleanupSchool(uid: string): Promise<void> {
 
 	logger.info(`Deleting groups in school ${uid}`);
 	const { searchEntries } = await client.search(
-		`ou=groups,o=${uid},${base_dn}`,
+		`ou=groups,o=${uid},ou=schools,${base_dn}`,
 		{
 			filter: '(objectClass=posixGroup)',
 		}
@@ -82,7 +82,7 @@ async function cleanupSchool(uid: string): Promise<void> {
 		await client.del(entry.dn);
 	}
 	logger.info(`Deleting ou=groups in school ${uid}`);
-	await client.del(`ou=groups,o=${uid},${base_dn}`);
+	await client.del(`ou=groups,o=${uid},ou=schools,${base_dn}`);
 
 	logger.info(`School ${uid} cleaned up`);
 }
@@ -98,7 +98,7 @@ async function deleteLdapSchool(uid: string): Promise<void> {
 	await cleanupSchool(uid);
 
 	logger.info(`Trying to delete school ${uid}`);
-	await client.del(`o=${uid},${base_dn}`);
+	await client.del(`o=${uid},ou=schools,${base_dn}`);
 	logger.info(`School ${uid} deleted`);
 }
 
