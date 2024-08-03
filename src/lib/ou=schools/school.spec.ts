@@ -4,7 +4,7 @@ import { ResultCodeError } from 'ldapts';
 import { Client } from '../../client';
 
 import { upsertLdapGroup } from './ou=groups/group';
-import { createLdapSchool, deleteLdapSchool } from './school';
+import { createLdapSchool, deleteLdapSchool, syncLdapSchools } from './school';
 
 const client = Client.getInstance('hidden');
 
@@ -79,6 +79,30 @@ test.serial('A school can be deleted', async (t) => {
 	)) as ResultCodeError;
 
 	t.is(error.code, 32, 'The school was not deleted');
+});
+
+test.serial('Schools can be synced', async (t) => {
+	await createLdapSchool('n7');
+	await createLdapSchool('n8');
+	await createLdapSchool('n9');
+
+	await syncLdapSchools(['n6', 'n7', 'n9', 'inp']);
+
+	const { searchEntries } = await client.search('ou=schools', {
+		filter: '(objectClass=organization)',
+	});
+
+	t.is(searchEntries.length, 4, 'The schools were not synced');
+
+	const uids = searchEntries.map((entry) => entry.o);
+	t.true(uids.includes('n6'), 'n6 was not synced');
+	t.true(uids.includes('n7'), 'n7 was not synced');
+	t.false(uids.includes('n8'), 'n8 was not deleted');
+	t.true(uids.includes('n9'), 'n9 was not synced');
+
+	await deleteLdapSchool('n6');
+	await deleteLdapSchool('n7');
+	await deleteLdapSchool('n9');
 });
 
 test.after(async () => {

@@ -31,17 +31,18 @@ async function createLdapSchool(uid: string): Promise<void> {
 		}
 	}
 
-	if (searchEntries.length === 0) {
-		logger.info(`School ${uid} does not exist, creating`);
-		await client.add(`o=${uid},ou=schools,${base_dn}`, {
-			objectClass: ['organization'],
-			o: uid,
-		});
-		await createSchoolLayout(uid);
-		logger.info(`School ${uid} created`);
+	if (searchEntries.length > 1) {
+		logger.info(`School ${uid} already exists`);
+		return;
 	}
 
-	logger.info(`School ${uid} already exists`);
+	logger.info(`School ${uid} does not exist, creating`);
+	await client.add(`o=${uid},ou=schools,${base_dn}`, {
+		objectClass: ['organization'],
+		o: uid,
+	});
+	await createSchoolLayout(uid);
+	logger.info(`School ${uid} created`);
 }
 
 /**
@@ -102,4 +103,35 @@ async function deleteLdapSchool(uid: string): Promise<void> {
 	logger.info(`School ${uid} deleted`);
 }
 
-export { createLdapSchool, deleteLdapSchool };
+/**
+ * Sync a list of schools with the LDAP server
+ *
+ * @param uids
+ */
+async function syncLdapSchools(uids: string[]): Promise<void> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'School');
+
+	logger.info('Syncing schools');
+
+	for (const uid of uids) {
+		await createLdapSchool(uid);
+	}
+
+	const { searchEntries } = await client.search(`ou=schools,${base_dn}`, {
+		filter: 'o=*',
+	});
+
+	const orphanSchools = searchEntries.filter(
+		(entry) => !uids.find((uid) => uid === entry.o)
+	);
+
+	for (const orphanSchool of orphanSchools) {
+		logger.info(`Removing orphan school ${orphanSchool.o}`);
+		await deleteLdapSchool(orphanSchool.o as string);
+	}
+
+	logger.info('Schools synced');
+}
+
+export { createLdapSchool, deleteLdapSchool, syncLdapSchools };
