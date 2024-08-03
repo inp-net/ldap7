@@ -7,6 +7,7 @@ import {
 	deleteLdapUser,
 	getLdapUser,
 	hashPassword,
+	syncLdapUsers,
 	upsertLdapUser,
 } from './user';
 
@@ -25,6 +26,27 @@ const user: LdapUser = {
 		'ssh-ed25519 placeholderkey 53308142+LeGmask@users.noreply.github.com',
 	],
 };
+
+/**
+ * Test users
+ */
+const users: LdapUser[] = [
+	user,
+	{
+		uid: 'toaster',
+		firstName: 'Toaster',
+		lastName: 'Strudel',
+		password: hashPassword('hello_world'),
+		email: ['toast@toast.net'],
+	},
+	{
+		uid: 'baguette',
+		firstName: 'Baguette',
+		lastName: 'Frenchie',
+		password: hashPassword('hello_world'),
+		email: ['baguette@france.fr'],
+	},
+];
 
 test.before(async () => {
 	await client.setup(
@@ -139,7 +161,65 @@ test.serial('An user can be deleted', async (t) => {
 	t.is(searchEntries.length, 0, 'User was not deleted');
 });
 
+test.serial('A list of users can be synced', async (t) => {
+	// Create users
+	for (const user of users) {
+		await upsertLdapUser(user);
+	}
+
+	const updatedUsers = users;
+	updatedUsers.shift();
+	updatedUsers[1].email.push('hello@hello.hello');
+	updatedUsers.push({
+		uid: 'newuser',
+		firstName: 'New',
+		lastName: 'User',
+		password: hashPassword('hello_world'),
+		email: ['user@user.user'],
+	});
+
+	await syncLdapUsers(updatedUsers);
+
+	const { searchEntries } = await client.search(`ou=people`, {
+		filter: `(|${users.map((user) => `(uid=${user.uid})`).join('')})`,
+	});
+
+	t.is(
+		searchEntries.length,
+		updatedUsers.length,
+		'Not all users were synchronized'
+	);
+
+	for (const user of updatedUsers) {
+		const insertedUser = searchEntries.find(
+			(entry) => entry.uid === user.uid
+		);
+
+		t.like(
+			insertedUser,
+			{
+				uid: user.uid,
+				cn: user.firstName + ' ' + user.lastName,
+				sn: user.lastName,
+				givenName: user.firstName,
+				displayName: user.firstName + ' ' + user.lastName,
+				initials: user.firstName[0] + user.lastName[0],
+				mail: user.email.length > 1 ? user.email : user.email[0],
+				userPassword: user.password,
+				gecos: user.firstName + ' ' + user.lastName,
+				gidNumber: '1000',
+				homeDirectory: '/tmp',
+				loginShell: '/bin/none',
+			},
+			'User does not match the expected values'
+		);
+	}
+});
+
 test.after(async () => {
+	for (const ldapUser of users) {
+		await deleteLdapUser(ldapUser.uid);
+	}
 	const client = Client.getInstance();
 	await client.disconnect();
 });

@@ -218,10 +218,6 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 	} else {
 		logger.info(`User ${ldapUser.uid} does not exist, creating`);
 
-		if (!ldapUser.password) {
-			throw new Error('Password is required');
-		}
-
 		if (ldapUser.email.length === 0) {
 			throw new Error('Email is required');
 		}
@@ -266,10 +262,6 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				values: ldapUser.email,
 			}),
 			new Attribute({
-				type: 'userPassword',
-				values: [ldapUser.password],
-			}),
-			new Attribute({
 				type: 'gecos',
 				values: [`${ldapUser.firstName} ${ldapUser.lastName}`],
 			}),
@@ -290,6 +282,14 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				values: ['/bin/none'],
 			}),
 		];
+
+		if (ldapUser.password)
+			newUser.push(
+				new Attribute({
+					type: 'userPassword',
+					values: [ldapUser.password],
+				})
+			);
 
 		// optional school
 		if (
@@ -313,16 +313,16 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			newUser.filter((attr) => attr.type === 'loginShell')[0].values = [
 				'/bin/bash',
 			];
-
-			// optional ssh keys
-			if (ldapUser.sshKeys !== undefined && ldapUser.sshKeys.length > 0)
-				newUser.push(
-					new Attribute({
-						type: 'sshPublicKey',
-						values: ldapUser.sshKeys,
-					})
-				);
 		}
+
+		// optional ssh keys
+		if (ldapUser.sshKeys !== undefined && ldapUser.sshKeys.length > 0)
+			newUser.push(
+				new Attribute({
+					type: 'sshPublicKey',
+					values: ldapUser.sshKeys,
+				})
+			);
 
 		// optional picture
 		if (ldapUser.picture)
@@ -378,4 +378,43 @@ async function deleteLdapUser(uid: string): Promise<void> {
 	logger.info(`User ${uid} removed`);
 }
 
-export { LdapUser, upsertLdapUser, getLdapUser, deleteLdapUser, hashPassword };
+/**
+ * Sync a list of LdapUser with the LDAP server
+ *
+ * @param ldapUsers
+ */
+async function syncLdapUsers(ldapUsers: LdapUser[]): Promise<void> {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'User');
+
+	logger.info('Syncing users');
+
+	for (const ldapUser of ldapUsers) {
+		// We always upsert the user, in order to keep the LDAP server in sync
+		await upsertLdapUser(ldapUser);
+	}
+
+	const { searchEntries } = await client.search(`ou=people,${base_dn}`, {
+		filter: 'uid=*',
+	});
+
+	const orphanUsers = searchEntries.filter(
+		(entry) => !ldapUsers.find((user) => user.uid === entry.uid)
+	);
+
+	for (const orphanUser of orphanUsers) {
+		logger.info(`Removing orphan user ${orphanUser.uid}`);
+		await deleteLdapUser(orphanUser.uid as string);
+	}
+
+	logger.info('Users synced');
+}
+
+export {
+	LdapUser,
+	upsertLdapUser,
+	getLdapUser,
+	deleteLdapUser,
+	syncLdapUsers,
+	hashPassword,
+};
