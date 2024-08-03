@@ -3,8 +3,9 @@ import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 
 import { Client } from '../../client';
-import { LdapUser } from '../../types/user';
 import { getLogger, isArray } from '../utils';
+
+import type { LdapUser } from './types';
 
 /**
  * Find the next available UID number using a binary search
@@ -108,7 +109,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				operation: 'replace',
 				modification: new Attribute({
 					type: 'givenName',
-					values: [ldapUser.givenName],
+					values: [ldapUser.firstName],
 				}),
 			}),
 			new Change({
@@ -250,7 +251,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			}),
 			new Attribute({
 				type: 'givenName',
-				values: [ldapUser.givenName],
+				values: [ldapUser.firstName],
 			}),
 			new Attribute({
 				type: 'displayName',

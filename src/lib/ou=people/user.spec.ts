@@ -1,8 +1,8 @@
 import test from 'ava';
 
 import { Client } from '../../client';
-import { LdapUser } from '../../types/user';
 
+import type { LdapUser } from './types';
 import {
 	deleteLdapUser,
 	getLdapUser,
@@ -19,7 +19,6 @@ const user: LdapUser = {
 	uid: 'versairea',
 	firstName: 'Annie',
 	lastName: 'Versaire',
-	givenName: 'Anniversaire',
 	password: hashPassword('hello_world'),
 	email: ['hello@ldap7.net'],
 	sshKeys: [
@@ -56,7 +55,7 @@ test.serial('An user can be created', async (t) => {
 			uid: user.uid,
 			cn: user.firstName + ' ' + user.lastName,
 			sn: user.lastName,
-			givenName: user.givenName,
+			givenName: user.firstName,
 			displayName: user.firstName + ' ' + user.lastName,
 			initials: user.firstName[0] + user.lastName[0],
 			mail: user.email[0],
@@ -80,7 +79,7 @@ test.serial('An user can be retrieved', async (t) => {
 			uid: user.uid,
 			cn: user.firstName + ' ' + user.lastName,
 			sn: user.lastName,
-			givenName: user.givenName,
+			givenName: user.firstName,
 			displayName: user.firstName + ' ' + user.lastName,
 			initials: user.firstName[0] + user.lastName[0],
 			mail: user.email[0],
@@ -114,7 +113,7 @@ test.serial('An user can be updated', async (t) => {
 			uid: updatedUser.uid,
 			cn: updatedUser.firstName + ' ' + updatedUser.lastName,
 			sn: updatedUser.lastName,
-			givenName: updatedUser.givenName,
+			givenName: updatedUser.firstName,
 			displayName: updatedUser.firstName + ' ' + updatedUser.lastName,
 			initials: updatedUser.firstName[0] + updatedUser.lastName[0],
 			mail: updatedUser.email,
