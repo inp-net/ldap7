@@ -15,11 +15,6 @@ export type LdapUser = {
 	lastName: string;
 
 	/**
-	 * Given name
-	 */
-	givenName: string;
-
-	/**
 	 * Email addresses
 	 */
 	email: string[];
