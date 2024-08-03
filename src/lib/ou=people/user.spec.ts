@@ -1,15 +1,15 @@
 import test from 'ava';
 
-import { Client } from '../../client';
+import { Client } from '../../client.js';
 
-import type { LdapUser } from './types';
+import type { LdapUser } from './types.js';
 import {
 	deleteLdapUser,
 	getLdapUser,
 	hashPassword,
 	syncLdapUsers,
 	upsertLdapUser,
-} from './user';
+} from './user.js';
 
 const client = Client.getInstance('hidden');
 
@@ -55,7 +55,7 @@ test.before(async () => {
 		},
 		'uid=churros,ou=services',
 		'ldapdev',
-		'dc=inpt,dc=fr'
+		'dc=inpt,dc=fr',
 	);
 	await client.connect();
 });
@@ -87,7 +87,7 @@ test.serial('An user can be created', async (t) => {
 			homeDirectory: '/tmp',
 			loginShell: '/bin/none',
 		},
-		'User does not match the expected values'
+		'User does not match the expected values',
 	);
 });
 
@@ -110,7 +110,7 @@ test.serial('An user can be retrieved', async (t) => {
 			homeDirectory: '/tmp',
 			loginShell: '/bin/none',
 		},
-		'User does not match the expected values'
+		'User does not match the expected values',
 	);
 });
 
@@ -147,7 +147,7 @@ test.serial('An user can be updated', async (t) => {
 			ou: 'n7',
 			sshPublicKey: updatedUser.sshKeys?.at(0),
 		},
-		'User does not match the expected values'
+		'User does not match the expected values',
 	);
 });
 
@@ -187,12 +187,12 @@ test.serial('A list of users can be synced', async (t) => {
 	t.is(
 		searchEntries.length,
 		updatedUsers.length,
-		'Not all users were synchronized'
+		'Not all users were synchronized',
 	);
 
 	for (const user of updatedUsers) {
 		const insertedUser = searchEntries.find(
-			(entry) => entry.uid === user.uid
+			(entry) => entry.uid === user.uid,
 		);
 
 		t.like(
@@ -211,7 +211,7 @@ test.serial('A list of users can be synced', async (t) => {
 				homeDirectory: '/tmp',
 				loginShell: '/bin/none',
 			},
-			'User does not match the expected values'
+			'User does not match the expected values',
 		);
 	}
 });

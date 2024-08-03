@@ -1,9 +1,9 @@
 import { Attribute, Change, Entry, ResultCodeError } from 'ldapts';
 
-import { Client } from '../../../client';
-import { getLogger } from '../../utils';
+import { Client } from '../../../client.js';
+import { getLogger } from '../../utils.js';
 
-import { LdapGroup } from './types';
+import { LdapGroup } from './types.js';
 
 /**
  * Create or update a group in LDAP
@@ -16,7 +16,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 
 	try {
 		const { searchEntries: entries } = await client.search(
-			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`
+			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`,
 		);
 		searchEntries.push(...entries);
 	} catch (error) {
@@ -41,7 +41,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 						values: group.members,
 					}),
 				}),
-			]
+			],
 		);
 	} else {
 		logger.info(`Creating group ${group.name}`);
@@ -66,12 +66,12 @@ async function upsertLdapGroup(group: LdapGroup) {
 				new Attribute({
 					type: 'memberUid',
 					values: group.members,
-				})
+				}),
 			);
 
 		await client.add(
 			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`,
-			ldapGroup
+			ldapGroup,
 		);
 	}
 }
@@ -82,7 +82,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 async function addMemberToLdapGroup(
 	uid: string,
 	group: string,
-	school: string
+	school: string,
 ) {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'Group');
@@ -98,7 +98,7 @@ async function addMemberToLdapGroup(
 					values: [uid],
 				}),
 			}),
-		]
+		],
 	);
 }
 
@@ -136,7 +136,7 @@ async function syncLdapGroups(groups: LdapGroup[]) {
 			`ou=groups,o=${school},ou=schools,${base_dn}`,
 			{
 				filter: '(objectClass=posixGroup)',
-			}
+			},
 		);
 
 		ldapGroups.push(...searchEntries);

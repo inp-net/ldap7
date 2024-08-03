@@ -1,7 +1,7 @@
 import { Entry, ResultCodeError } from 'ldapts';
 
-import { Client } from '../../client';
-import { getLogger } from '../utils';
+import { Client } from '../../client.js';
+import { getLogger } from '../utils.js';
 
 /**
  * Create a new school in LDAP if it does not exist
@@ -19,7 +19,7 @@ async function createLdapSchool(uid: string): Promise<void> {
 
 	try {
 		const { searchEntries: entries } = await client.search(
-			`o=${uid},ou=schools,${base_dn}`
+			`o=${uid},ou=schools,${base_dn}`,
 		);
 		searchEntries.push(...entries);
 	} catch (error) {
@@ -77,7 +77,7 @@ async function cleanupSchool(uid: string): Promise<void> {
 		`ou=groups,o=${uid},ou=schools,${base_dn}`,
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 	for (const entry of searchEntries) {
 		await client.del(entry.dn);
@@ -123,7 +123,7 @@ async function syncLdapSchools(uids: string[]): Promise<void> {
 	});
 
 	const orphanSchools = searchEntries.filter(
-		(entry) => !uids.find((uid) => uid === entry.o)
+		(entry) => !uids.find((uid) => uid === entry.o),
 	);
 
 	for (const orphanSchool of orphanSchools) {

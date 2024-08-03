@@ -1,10 +1,14 @@
 import test from 'ava';
 import { ResultCodeError } from 'ldapts';
 
-import { Client } from '../../client';
+import { Client } from '../../client.js';
 
-import { upsertLdapGroup } from './ou=groups/group';
-import { createLdapSchool, deleteLdapSchool, syncLdapSchools } from './school';
+import { upsertLdapGroup } from './ou=groups/group.js';
+import {
+	createLdapSchool,
+	deleteLdapSchool,
+	syncLdapSchools,
+} from './school.js';
 
 const client = Client.getInstance('hidden');
 
@@ -15,7 +19,7 @@ test.before(async () => {
 		},
 		'uid=churros,ou=services',
 		'ldapdev',
-		'dc=inpt,dc=fr'
+		'dc=inpt,dc=fr',
 	);
 	await client.connect();
 });
@@ -31,18 +35,18 @@ test.serial('A school can be created', async (t) => {
 	t.is(
 		searchEntries[0].o,
 		'n7',
-		'The school was not created with the correct uid'
+		'The school was not created with the correct uid',
 	);
 
 	// we also check the layout of the school
 	const { searchEntries: groups } = await client.search(
-		'ou=groups,o=n7,ou=schools'
+		'ou=groups,o=n7,ou=schools',
 	);
 	t.is(groups.length, 1, 'No groups ou was created');
 	t.is(
 		groups[0].ou,
 		'groups',
-		'The groups ou was not created with the correct uid'
+		'The groups ou was not created with the correct uid',
 	);
 });
 
@@ -75,7 +79,7 @@ test.serial('A school can be deleted', async (t) => {
 		async () => {
 			await client.search(`o=n7,ou=schools`);
 		},
-		{ instanceOf: Error }
+		{ instanceOf: Error },
 	)) as ResultCodeError;
 
 	t.is(error.code, 32, 'The school was not deleted');

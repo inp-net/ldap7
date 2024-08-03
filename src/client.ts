@@ -24,7 +24,7 @@ export class Client {
 	 * @param logs
 	 */
 	public static getInstance(
-		logs: 'pretty' | 'json' | 'hidden' = 'pretty'
+		logs: 'pretty' | 'json' | 'hidden' = 'pretty',
 	): Client {
 		if (!Client.#instance) {
 			Client.#instance = new Client(logs);
@@ -68,7 +68,7 @@ export class Client {
 		option: ClientOptions,
 		bind_cn: string,
 		bind_password: string,
-		base_dn: string
+		base_dn: string,
 	) {
 		if (this.client) {
 			await this.client.unbind();
@@ -114,7 +114,7 @@ export class Client {
 	public async search(
 		DN: DN | string,
 		options?: SearchOptions,
-		controls?: Control | Control[]
+		controls?: Control | Control[],
 	): Promise<SearchResult> {
 		if (!this.client) {
 			throw new Error('LDAP Client is not initialized');
@@ -123,7 +123,7 @@ export class Client {
 		return await this.client.search(
 			`${DN},${this.base_dn}`,
 			options,
-			controls
+			controls,
 		);
 	}
 }

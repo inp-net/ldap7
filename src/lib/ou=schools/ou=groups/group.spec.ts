@@ -1,7 +1,7 @@
 import test from 'ava';
 
-import { Client } from '../../../client';
-import { createLdapSchool, deleteLdapSchool } from '../school';
+import { Client } from '../../../client.js';
+import { createLdapSchool, deleteLdapSchool } from '../school.js';
 
 import {
 	addMemberToLdapGroup,
@@ -9,7 +9,7 @@ import {
 	LdapGroup,
 	syncLdapGroups,
 	upsertLdapGroup,
-} from './group';
+} from './group.js';
 
 const client = Client.getInstance('hidden');
 
@@ -20,7 +20,7 @@ test.before(async () => {
 		},
 		'uid=churros,ou=services',
 		'ldapdev',
-		'dc=inpt,dc=fr'
+		'dc=inpt,dc=fr',
 	);
 	await client.connect();
 	await createLdapSchool('inp'); // Create a school for testing
@@ -37,7 +37,7 @@ test.serial('A group can be upserted', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(createdGroup.length, 1, 'No group was created');
@@ -48,7 +48,7 @@ test.serial('A group can be upserted', async (t) => {
 			gidNumber: '1001',
 			memberUid: undefined,
 		},
-		'The group was not created with the correct attributes'
+		'The group was not created with the correct attributes',
 	);
 
 	await upsertLdapGroup({
@@ -62,7 +62,7 @@ test.serial('A group can be upserted', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(updatedGroup.length, 1, 'Another group was created or deleted');
@@ -73,7 +73,7 @@ test.serial('A group can be upserted', async (t) => {
 			gidNumber: '1001',
 			memberUid: ['versairea', 'dreumonte'],
 		},
-		'The group was not created with the correct attributes'
+		'The group was not created with the correct attributes',
 	);
 
 	await upsertLdapGroup({
@@ -87,7 +87,7 @@ test.serial('A group can be upserted', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(updatedTwiceGroup.length, 1, 'Another group was created or deleted');
@@ -98,7 +98,7 @@ test.serial('A group can be upserted', async (t) => {
 			gidNumber: '1001',
 			memberUid: undefined,
 		},
-		'The group was not updated with the correct attributes'
+		'The group was not updated with the correct attributes',
 	);
 });
 
@@ -109,7 +109,7 @@ test.serial('A member can be added to a group', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(group[0].memberUid, 'astleyr', 'Member was not added to the group');
@@ -122,7 +122,7 @@ test.serial('A group can be deleted', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(searchEntries.length, 0, 'Group was not deleted');
@@ -163,7 +163,7 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 		'ou=groups,o=inp,ou=schools',
 		{
 			filter: '(objectClass=posixGroup)',
-		}
+		},
 	);
 
 	t.is(searchEntries.length, 2, 'Groups were not synced correctly');
@@ -180,7 +180,7 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 				gidNumber: group.gidNumber.toString(),
 				memberUid: members,
 			},
-			'Groups were not synced correctly'
+			'Groups were not synced correctly',
 		);
 	}
 });

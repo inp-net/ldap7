@@ -2,10 +2,10 @@ import cryptoRandomString from 'crypto-random-string';
 import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 
-import { Client } from '../../client';
-import { getLogger, isArray } from '../utils';
+import { Client } from '../../client.js';
+import { getLogger, isArray } from '../utils.js';
 
-import type { LdapUser } from './types';
+import type { LdapUser } from './types.js';
 
 /**
  * Find the next available UID number using a binary search
@@ -15,7 +15,7 @@ import type { LdapUser } from './types';
  */
 async function findNextUidNumber(
 	min = 10000,
-	max = 100000000
+	max = 100000000,
 ): Promise<number> {
 	if (max >= 100000001) {
 		throw new Error('No available UIDs');
@@ -32,7 +32,7 @@ async function findNextUidNumber(
 	if (min == max) {
 		if (searchEntries.length > 0)
 			throw new Error(
-				'An error occurred while searching for the next available UID number'
+				'An error occurred while searching for the next available UID number',
 			);
 		return min;
 	}
@@ -51,7 +51,7 @@ async function findNextUidNumber(
 function hashPassword(password: string): string {
 	return `{CRYPT}${sha512.crypt(
 		password,
-		cryptoRandomString({ length: 16 })
+		cryptoRandomString({ length: 16 }),
 	)}`;
 }
 
@@ -143,7 +143,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 						type: 'userPassword',
 						values: [ldapUser.password],
 					}),
-				})
+				}),
 			);
 		}
 
@@ -160,7 +160,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 							? ldapUser.school
 							: [ldapUser.school],
 					}),
-				})
+				}),
 			);
 
 			if (
@@ -174,7 +174,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 							type: 'homeDirectory',
 							values: [`/home/${ldapUser.uid}`],
 						}),
-					})
+					}),
 				);
 
 				changes.push(
@@ -184,7 +184,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 							type: 'loginShell',
 							values: ['/bin/bash'],
 						}),
-					})
+					}),
 				);
 			}
 
@@ -196,7 +196,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 							type: 'sshPublicKey',
 							values: ldapUser.sshKeys,
 						}),
-					})
+					}),
 				);
 		}
 
@@ -208,12 +208,12 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 						type: 'jpegPhoto',
 						values: ldapUser.picture,
 					}),
-				})
+				}),
 			);
 
 		await client.modify(
 			`uid=${ldapUser.uid},ou=people,${base_dn}`,
-			changes
+			changes,
 		);
 	} else {
 		logger.info(`User ${ldapUser.uid} does not exist, creating`);
@@ -288,7 +288,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				new Attribute({
 					type: 'userPassword',
 					values: [ldapUser.password],
-				})
+				}),
 			);
 
 		// optional school
@@ -303,7 +303,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 					values: isArray(ldapUser.school)
 						? ldapUser.school
 						: [ldapUser.school],
-				})
+				}),
 			);
 
 			// Since the user is now an "internal" user, we need to setup
@@ -321,7 +321,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				new Attribute({
 					type: 'sshPublicKey',
 					values: ldapUser.sshKeys,
-				})
+				}),
 			);
 
 		// optional picture
@@ -330,7 +330,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				new Attribute({
 					type: 'jpegPhoto',
 					values: ldapUser.picture,
-				})
+				}),
 			);
 
 		await client.add(`uid=${ldapUser.uid},ou=people,${base_dn}`, newUser);
@@ -399,7 +399,7 @@ async function syncLdapUsers(ldapUsers: LdapUser[]): Promise<void> {
 	});
 
 	const orphanUsers = searchEntries.filter(
-		(entry) => !ldapUsers.find((user) => user.uid === entry.uid)
+		(entry) => !ldapUsers.find((user) => user.uid === entry.uid),
 	);
 
 	for (const orphanUser of orphanUsers) {
