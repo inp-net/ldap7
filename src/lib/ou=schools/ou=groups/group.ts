@@ -1,8 +1,9 @@
 import { Attribute, Change, Entry, ResultCodeError } from 'ldapts';
 
 import { Client } from '../../../client';
-import { LdapGroup } from './types';
 import { getLogger } from '../../utils';
+
+import { LdapGroup } from './types';
 
 /**
  * Create or update a group in LDAP
@@ -115,4 +116,46 @@ async function deleteLdapGroup(cn: string, school: string) {
 	await client.del(`cn=${cn},ou=groups,o=${school},ou=schools,${base_dn}`);
 }
 
-export { LdapGroup, upsertLdapGroup, addMemberToLdapGroup, deleteLdapGroup };
+async function syncLdapGroups(groups: LdapGroup[]) {
+	const { client, logger: parentLogger, base_dn } = Client.getClient();
+	const logger = getLogger(parentLogger, 'Group');
+
+	logger.info('Syncing groups');
+
+	for (const group of groups) {
+		await upsertLdapGroup(group);
+	}
+
+	const schools = new Set(groups.map((group) => group.school));
+
+	logger.info('Syncing orphan groups', { schools });
+	const ldapGroups: Entry[] = [];
+
+	for (const school of schools) {
+		const { searchEntries } = await client.search(
+			`ou=groups,o=${school},ou=schools,${base_dn}`,
+			{
+				filter: '(objectClass=posixGroup)',
+			}
+		);
+
+		ldapGroups.push(...searchEntries);
+	}
+
+	ldapGroups
+		.filter((entry) => !groups.some((group) => group.name === entry.cn))
+		.forEach((entry) => {
+			logger.info(`Deleting orphan group ${entry.cn}`);
+			client.del(entry.dn);
+		});
+
+	logger.info('Groups synced');
+}
+
+export {
+	LdapGroup,
+	upsertLdapGroup,
+	addMemberToLdapGroup,
+	deleteLdapGroup,
+	syncLdapGroups,
+};

@@ -6,6 +6,8 @@ import { createLdapSchool, deleteLdapSchool } from '../school';
 import {
 	addMemberToLdapGroup,
 	deleteLdapGroup,
+	LdapGroup,
+	syncLdapGroups,
 	upsertLdapGroup,
 } from './group';
 
@@ -124,6 +126,63 @@ test.serial('A group can be deleted', async (t) => {
 	);
 
 	t.is(searchEntries.length, 0, 'Group was not deleted');
+});
+
+test.serial('LdapGroups can be synced with a list of groups', async (t) => {
+	const groups: LdapGroup[] = [
+		{
+			name: 'inp-net-inp',
+			gidNumber: 1001,
+			school: 'inp',
+			members: ['astleyr'],
+		},
+		{
+			name: 'inp-net-inp2',
+			gidNumber: 1002,
+			school: 'inp',
+			members: ['astleyr'],
+		},
+	];
+
+	for (const group of groups) {
+		await upsertLdapGroup(group);
+	}
+
+	groups.push({
+		name: 'inp-net-inp3',
+		gidNumber: 1003,
+		school: 'inp',
+		members: ['astleyr'],
+	});
+	groups.shift();
+	groups[0].members = ['astleyr', 'dreumonte'];
+
+	await syncLdapGroups(groups);
+
+	const { searchEntries } = await client.search(
+		'ou=groups,o=inp,ou=schools',
+		{
+			filter: '(objectClass=posixGroup)',
+		}
+	);
+
+	t.is(searchEntries.length, 2, 'Groups were not synced correctly');
+
+	for (const group of groups) {
+		let members: string[] | string =
+			group.members?.length && group.members ? group.members : [];
+		members = members.length > 1 ? members : members[0];
+
+		t.like(
+			searchEntries.find((entry) => entry.cn === group.name),
+			{
+				cn: group.name,
+				gidNumber: group.gidNumber.toString(),
+				memberUid: members,
+			},
+			'Groups were not synced correctly'
+		);
+	}
 });
 
 test.after(async () => {
