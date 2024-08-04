@@ -219,7 +219,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			changes,
 		);
 	} else {
-		logger.info(`User ${ldapUser.uid} does not exist, creating`);
+		logger.debug(`User ${ldapUser.uid} does not exist, creating`);
 
 		if (ldapUser.email.length === 0) {
 			throw new Error('Email is required');
