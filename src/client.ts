@@ -14,20 +14,30 @@ export class Client {
 	base_dn: string | undefined;
 	logger: Logger<ILogObj>;
 
-	private constructor(logs: 'pretty' | 'json' | 'hidden') {
-		this.logger = new Logger({ type: logs, name: 'ldap7' });
+	private constructor(
+		logs: 'pretty' | 'json' | 'hidden',
+		logger?: Logger<ILogObj>,
+	) {
+		this.logger =
+			logger?.getSubLogger({ name: 'ldap7' }) ||
+			new Logger({
+				type: logs,
+				name: 'ldap7',
+			});
 	}
 
 	/**
 	 * Get the instance
 	 *
 	 * @param logs
+	 * @param logger
 	 */
 	public static getInstance(
 		logs: 'pretty' | 'json' | 'hidden' = 'pretty',
+		logger?: Logger<ILogObj>,
 	): Client {
 		if (!Client.#instance) {
-			Client.#instance = new Client(logs);
+			Client.#instance = new Client(logs, logger);
 		}
 
 		return Client.#instance;

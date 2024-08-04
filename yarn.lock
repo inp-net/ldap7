@@ -392,6 +392,7 @@ __metadata:
   dependencies:
     "@ava/typescript": "npm:^5.0.0"
     "@istanbuljs/nyc-config-typescript": "npm:^1.0.2"
+    "@types/latinize": "npm:^0.2.18"
     "@types/node": "npm:^22.1.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
     "@typescript-eslint/parser": "npm:^8.0.0"
@@ -403,6 +404,7 @@ __metadata:
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-eslint-comments: "npm:^3.2.0"
     eslint-plugin-import: "npm:^2.29.1"
+    latinize: "npm:^2.0.0"
     ldapts: "npm:^7.1.0"
     npm-run-all2: "npm:^6.2.2"
     nyc: "npm:^17.0.0"
@@ -645,6 +647,13 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10c0/6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
+  languageName: node
+  linkType: hard
+
+"@types/latinize@npm:^0.2.18":
+  version: 0.2.18
+  resolution: "@types/latinize@npm:0.2.18"
+  checksum: 10c0/c6f6f1d1f4fb4eb0c70d7c59ccc823ca8d3865e4bfce915e257277215731e81a3645f01c998949bc2a31af8897301d6a4bb13c1204ea795b33a50ba55700f2f6
   languageName: node
   linkType: hard
 
@@ -4246,6 +4255,13 @@ __metadata:
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"
   checksum: 10c0/61cdff9623dabf3568b6445e93e31376bee1cdb93f8ba7033d86022c2a9b1791a1d9510e026e6465ebd701a6dd2f7b0808483ad8838341ac52f003f512e0b4c4
+  languageName: node
+  linkType: hard
+
+"latinize@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "latinize@npm:2.0.0"
+  checksum: 10c0/58f60f1bd61d3187a652e09cf8ed927074f5b5a4264b65c147b156935393ad649650e54afdce8ff61139aac219217ac12c9d084a4dfcdd1266d9436afcb3b217
   languageName: node
   linkType: hard
 

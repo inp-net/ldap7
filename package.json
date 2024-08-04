@@ -55,6 +55,7 @@
 	},
 	"dependencies": {
 		"crypto-random-string": "5.0.0",
+		"latinize": "^2.0.0",
 		"ldapts": "^7.1.0",
 		"sha512-crypt-ts": "^0.1.27",
 		"tslog": "^4.9.3"
@@ -62,6 +63,7 @@
 	"devDependencies": {
 		"@ava/typescript": "^5.0.0",
 		"@istanbuljs/nyc-config-typescript": "^1.0.2",
+		"@types/latinize": "^0.2.18",
 		"@types/node": "^22.1.0",
 		"@typescript-eslint/eslint-plugin": "^8.0.0",
 		"@typescript-eslint/parser": "^8.0.0",

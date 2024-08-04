@@ -29,7 +29,7 @@ test.before(async () => {
 test.serial('A group can be upserted', async (t) => {
 	await upsertLdapGroup({
 		name: 'inp-net-inp',
-		gidNumber: 1001,
+		gidNumber: 1,
 		school: 'inp',
 	});
 
@@ -53,7 +53,7 @@ test.serial('A group can be upserted', async (t) => {
 
 	await upsertLdapGroup({
 		name: 'inp-net-inp',
-		gidNumber: 1001,
+		gidNumber: 1,
 		school: 'inp',
 		members: ['versairea', 'dreumonte'],
 	});
@@ -78,7 +78,7 @@ test.serial('A group can be upserted', async (t) => {
 
 	await upsertLdapGroup({
 		name: 'inp-net-inp',
-		gidNumber: 1001,
+		gidNumber: 1,
 		school: 'inp',
 		members: [],
 	});
@@ -132,13 +132,13 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 	const groups: LdapGroup[] = [
 		{
 			name: 'inp-net-inp',
-			gidNumber: 1001,
+			gidNumber: 1,
 			school: 'inp',
 			members: ['astleyr'],
 		},
 		{
 			name: 'inp-net-inp2',
-			gidNumber: 1002,
+			gidNumber: 2,
 			school: 'inp',
 			members: ['astleyr'],
 		},
@@ -150,7 +150,7 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 
 	groups.push({
 		name: 'inp-net-inp3',
-		gidNumber: 1003,
+		gidNumber: 3,
 		school: 'inp',
 		members: ['astleyr'],
 	});
@@ -177,7 +177,7 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 			searchEntries.find((entry) => entry.cn === group.name),
 			{
 				cn: group.name,
-				gidNumber: group.gidNumber.toString(),
+				gidNumber: (1000 + group.gidNumber).toString(),
 				memberUid: members,
 			},
 			'Groups were not synced correctly',

@@ -1,4 +1,5 @@
 import test from 'ava';
+import latinize from 'latinize';
 
 import { Client } from '../../client.js';
 
@@ -82,7 +83,7 @@ test.serial('An user can be created', async (t) => {
 			initials: user.firstName[0] + user.lastName[0],
 			mail: user.email[0],
 			userPassword: user.password,
-			gecos: user.firstName + ' ' + user.lastName,
+			gecos: latinize(user.firstName + ' ' + user.lastName),
 			gidNumber: '1000',
 			homeDirectory: '/tmp',
 			loginShell: '/bin/none',
@@ -105,7 +106,7 @@ test.serial('An user can be retrieved', async (t) => {
 			displayName: user.firstName + ' ' + user.lastName,
 			initials: user.firstName[0] + user.lastName[0],
 			mail: user.email[0],
-			gecos: user.firstName + ' ' + user.lastName,
+			gecos: latinize(user.firstName + ' ' + user.lastName),
 			gidNumber: '1000',
 			homeDirectory: '/tmp',
 			loginShell: '/bin/none',
@@ -140,7 +141,7 @@ test.serial('An user can be updated', async (t) => {
 			initials: updatedUser.firstName[0] + updatedUser.lastName[0],
 			mail: updatedUser.email,
 			userPassword: updatedUser.password,
-			gecos: updatedUser.firstName + ' ' + updatedUser.lastName,
+			gecos: latinize(updatedUser.firstName + ' ' + updatedUser.lastName),
 			gidNumber: '1000',
 			homeDirectory: '/home/' + updatedUser.uid,
 			loginShell: '/bin/bash',
@@ -206,7 +207,7 @@ test.serial('A list of users can be synced', async (t) => {
 				initials: user.firstName[0] + user.lastName[0],
 				mail: user.email.length > 1 ? user.email : user.email[0],
 				userPassword: user.password,
-				gecos: user.firstName + ' ' + user.lastName,
+				gecos: latinize(user.firstName + ' ' + user.lastName),
 				gidNumber: '1000',
 				homeDirectory: '/tmp',
 				loginShell: '/bin/none',

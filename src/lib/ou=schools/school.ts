@@ -14,7 +14,7 @@ async function createLdapSchool(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'School');
 
-	logger.info(`Checking if school ${uid} exists`);
+	logger.debug(`Checking if school ${uid} exists`);
 	const searchEntries: Entry[] = [];
 
 	try {
@@ -32,17 +32,17 @@ async function createLdapSchool(uid: string): Promise<void> {
 	}
 
 	if (searchEntries.length > 1) {
-		logger.info(`School ${uid} already exists`);
+		logger.debug(`School ${uid} already exists`);
 		return;
 	}
 
-	logger.info(`School ${uid} does not exist, creating`);
+	logger.debug(`School ${uid} does not exist, creating`);
 	await client.add(`o=${uid},ou=schools,${base_dn}`, {
 		objectClass: ['organization'],
 		o: uid,
 	});
 	await createSchoolLayout(uid);
-	logger.info(`School ${uid} created`);
+	logger.debug(`School ${uid} created`);
 }
 
 /**
@@ -52,15 +52,15 @@ async function createLdapSchool(uid: string): Promise<void> {
 async function createSchoolLayout(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'School');
-	logger.info(`Creating layout for school ${uid}`);
+	logger.debug(`Creating layout for school ${uid}`);
 
-	logger.info(`Creating ou=groups in school ${uid}`);
+	logger.debug(`Creating ou=groups in school ${uid}`);
 	await client.add(`ou=groups,o=${uid},ou=schools,${base_dn}`, {
 		objectClass: ['organizationalUnit'],
 		ou: 'groups',
 	});
 
-	logger.info(`School ${uid} layout created`);
+	logger.debug(`School ${uid} layout created`);
 }
 
 /**
@@ -70,9 +70,9 @@ async function createSchoolLayout(uid: string): Promise<void> {
 async function cleanupSchool(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'School');
-	logger.info(`Cleaning up school ${uid}`);
+	logger.debug(`Cleaning up school ${uid}`);
 
-	logger.info(`Deleting groups in school ${uid}`);
+	logger.debug(`Deleting groups in school ${uid}`);
 	const { searchEntries } = await client.search(
 		`ou=groups,o=${uid},ou=schools,${base_dn}`,
 		{
@@ -82,10 +82,10 @@ async function cleanupSchool(uid: string): Promise<void> {
 	for (const entry of searchEntries) {
 		await client.del(entry.dn);
 	}
-	logger.info(`Deleting ou=groups in school ${uid}`);
+	logger.debug(`Deleting ou=groups in school ${uid}`);
 	await client.del(`ou=groups,o=${uid},ou=schools,${base_dn}`);
 
-	logger.info(`School ${uid} cleaned up`);
+	logger.debug(`School ${uid} cleaned up`);
 }
 
 /**
@@ -98,9 +98,9 @@ async function deleteLdapSchool(uid: string): Promise<void> {
 
 	await cleanupSchool(uid);
 
-	logger.info(`Trying to delete school ${uid}`);
+	logger.debug(`Trying to delete school ${uid}`);
 	await client.del(`o=${uid},ou=schools,${base_dn}`);
-	logger.info(`School ${uid} deleted`);
+	logger.debug(`School ${uid} deleted`);
 }
 
 /**
@@ -112,10 +112,14 @@ async function syncLdapSchools(uids: string[]): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'School');
 
-	logger.info('Syncing schools');
+	logger.info(`Syncing schools`);
 
 	for (const uid of uids) {
-		await createLdapSchool(uid);
+		try {
+			await createLdapSchool(uid);
+		} catch (error) {
+			logger.error(`Error syncing school ${uid}`, error);
+		}
 	}
 
 	const { searchEntries } = await client.search(`ou=schools,${base_dn}`, {
@@ -127,11 +131,15 @@ async function syncLdapSchools(uids: string[]): Promise<void> {
 	);
 
 	for (const orphanSchool of orphanSchools) {
-		logger.info(`Removing orphan school ${orphanSchool.o}`);
-		await deleteLdapSchool(orphanSchool.o as string);
+		logger.debug(`Removing orphan school ${orphanSchool.o}`);
+		try {
+			await deleteLdapSchool(orphanSchool.o as string);
+		} catch (error) {
+			logger.error(`Error deleting school ${orphanSchool.o}`, error);
+		}
 	}
 
-	logger.info('Schools synced');
+	logger.info(`${uids.length} Schools synced`);
 }
 
 export { createLdapSchool, deleteLdapSchool, syncLdapSchools };

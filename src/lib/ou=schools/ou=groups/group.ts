@@ -29,7 +29,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 	}
 
 	if (searchEntries.length > 0) {
-		logger.info(`Group ${group.name} already exists, updating`);
+		logger.debug(`Group ${group.name} already exists, updating`);
 
 		await client.modify(
 			`cn=${group.name},ou=groups,o=${group.school},ou=schools,${base_dn}`,
@@ -44,7 +44,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 			],
 		);
 	} else {
-		logger.info(`Creating group ${group.name}`);
+		logger.debug(`Creating group ${group.name}`);
 
 		const ldapGroup = [
 			new Attribute({
@@ -57,7 +57,7 @@ async function upsertLdapGroup(group: LdapGroup) {
 			}),
 			new Attribute({
 				type: 'gidNumber',
-				values: [group.gidNumber.toString()],
+				values: [(1000 + group.gidNumber).toString()],
 			}),
 		];
 
@@ -87,7 +87,7 @@ async function addMemberToLdapGroup(
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'Group');
 
-	logger.info(`Adding user ${uid} to group ${group}`);
+	logger.debug(`Adding user ${uid} to group ${group}`);
 	await client.modify(
 		`cn=${group},ou=groups,o=${school},ou=schools,${base_dn}`,
 		[
@@ -112,7 +112,7 @@ async function deleteLdapGroup(cn: string, school: string) {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'Group');
 
-	logger.info(`Deleting group ${cn}`);
+	logger.debug(`Deleting group ${cn}`);
 	await client.del(`cn=${cn},ou=groups,o=${school},ou=schools,${base_dn}`);
 }
 
@@ -120,15 +120,17 @@ async function syncLdapGroups(groups: LdapGroup[]) {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'Group');
 
-	logger.info('Syncing groups');
+	logger.debug(`Syncing groups`);
 
 	for (const group of groups) {
-		await upsertLdapGroup(group);
+		try {
+			await upsertLdapGroup(group);
+		} catch (error) {
+			logger.error(`Error syncing group ${group.name}`, error);
+		}
 	}
 
 	const schools = new Set(groups.map((group) => group.school));
-
-	logger.info('Syncing orphan groups', { schools });
 	const ldapGroups: Entry[] = [];
 
 	for (const school of schools) {
@@ -145,11 +147,15 @@ async function syncLdapGroups(groups: LdapGroup[]) {
 	ldapGroups
 		.filter((entry) => !groups.some((group) => group.name === entry.cn))
 		.forEach((entry) => {
-			logger.info(`Deleting orphan group ${entry.cn}`);
-			client.del(entry.dn);
+			logger.debug(`Deleting orphan group ${entry.cn}`);
+			try {
+				client.del(entry.dn);
+			} catch (error) {
+				logger.error(`Error deleting group ${entry.cn}`, error);
+			}
 		});
 
-	logger.info('Groups synced');
+	logger.info(`${groups.length} groups synced`);
 }
 
 export {

@@ -1,4 +1,5 @@
 import cryptoRandomString from 'crypto-random-string';
+import latinize from 'latinize';
 import { Attribute, Change, Entry } from 'ldapts';
 import { sha512 } from 'sha512-crypt-ts';
 
@@ -68,7 +69,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
-	logger.info(`Upserting user ${ldapUser.uid}`);
+	logger.debug(`Upserting user ${ldapUser.uid}`);
 
 	const { searchEntries } = await client.search(`ou=people,${base_dn}`, {
 		filter: `uid=${ldapUser.uid}`,
@@ -79,7 +80,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 	}
 
 	if (searchEntries.length > 0) {
-		logger.info(`User ${ldapUser.uid} already exists, updating`);
+		logger.debug(`User ${ldapUser.uid} already exists, updating`);
 
 		const user = searchEntries[0];
 
@@ -130,7 +131,9 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				operation: 'replace',
 				modification: new Attribute({
 					type: 'gecos',
-					values: [`${ldapUser.firstName} ${ldapUser.lastName}`],
+					values: [
+						latinize(`${ldapUser.firstName} ${ldapUser.lastName}`),
+					],
 				}),
 			}),
 		];
@@ -263,7 +266,9 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			}),
 			new Attribute({
 				type: 'gecos',
-				values: [`${ldapUser.firstName} ${ldapUser.lastName}`],
+				values: [
+					latinize(`${ldapUser.firstName} ${ldapUser.lastName}`),
+				],
 			}),
 			new Attribute({
 				type: 'uidNumber',
@@ -336,7 +341,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 		await client.add(`uid=${ldapUser.uid},ou=people,${base_dn}`, newUser);
 	}
 
-	logger.info(`User ${ldapUser.uid} upserted`);
+	logger.debug(`User ${ldapUser.uid} upserted`);
 }
 
 /**
@@ -351,7 +356,7 @@ async function getLdapUser(uid: string): Promise<Entry | null> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
-	logger.info(`Getting user ${uid}`);
+	logger.debug(`Getting user ${uid}`);
 	const { searchEntries } = await client.search(`ou=people,${base_dn}`, {
 		filter: `uid=${uid}`,
 	});
@@ -373,9 +378,9 @@ async function deleteLdapUser(uid: string): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
-	logger.info(`Removing user ${uid}`);
+	logger.debug(`Removing user ${uid}`);
 	await client.del(`uid=${uid},ou=people,${base_dn}`);
-	logger.info(`User ${uid} removed`);
+	logger.debug(`User ${uid} removed`);
 }
 
 /**
@@ -387,11 +392,15 @@ async function syncLdapUsers(ldapUsers: LdapUser[]): Promise<void> {
 	const { client, logger: parentLogger, base_dn } = Client.getClient();
 	const logger = getLogger(parentLogger, 'User');
 
-	logger.info('Syncing users');
+	logger.info(`Syncing users`);
 
 	for (const ldapUser of ldapUsers) {
 		// We always upsert the user, in order to keep the LDAP server in sync
-		await upsertLdapUser(ldapUser);
+		try {
+			await upsertLdapUser(ldapUser);
+		} catch (error) {
+			logger.error(`Error syncing user ${ldapUser.uid}`, error);
+		}
 	}
 
 	const { searchEntries } = await client.search(`ou=people,${base_dn}`, {
@@ -403,11 +412,15 @@ async function syncLdapUsers(ldapUsers: LdapUser[]): Promise<void> {
 	);
 
 	for (const orphanUser of orphanUsers) {
-		logger.info(`Removing orphan user ${orphanUser.uid}`);
-		await deleteLdapUser(orphanUser.uid as string);
+		logger.debug(`Removing orphan user ${orphanUser.uid}`);
+		try {
+			await deleteLdapUser(orphanUser.uid as string);
+		} catch (error) {
+			logger.error(`Error removing orphan user ${orphanUser.uid}`, error);
+		}
 	}
 
-	logger.info('Users synced');
+	logger.info(`${ldapUsers.length} users synced`);
 }
 
 export {
