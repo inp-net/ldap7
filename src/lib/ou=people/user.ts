@@ -50,10 +50,7 @@ async function findNextUidNumber(
  * @param password
  */
 function hashPassword(password: string): string {
-	return `{CRYPT}${sha512.crypt(
-		password,
-		cryptoRandomString({ length: 16 }),
-	)}`;
+	return `{CRYPT}${sha512.crypt(password, cryptoRandomString({ length: 16 }))}`;
 }
 
 /**
@@ -124,7 +121,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				operation: 'replace',
 				modification: new Attribute({
 					type: 'mail',
-					values: ldapUser.email,
+					values: [...new Set(ldapUser.email)],
 				}),
 			}),
 			new Change({
@@ -132,7 +129,12 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				modification: new Attribute({
 					type: 'gecos',
 					values: [
-						latinize(`${ldapUser.firstName} ${ldapUser.lastName}`),
+						latinize(
+							`${ldapUser.firstName} ${ldapUser.lastName}`,
+						).replace(
+							/[^\x00-\x7F]/g, // eslint-disable-line no-control-regex
+							' ',
+						),
 					],
 				}),
 			}),
@@ -262,12 +264,17 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			}),
 			new Attribute({
 				type: 'mail',
-				values: ldapUser.email,
+				values: [...new Set(ldapUser.email)], // remove duplicates
 			}),
 			new Attribute({
 				type: 'gecos',
 				values: [
-					latinize(`${ldapUser.firstName} ${ldapUser.lastName}`),
+					latinize(
+						`${ldapUser.firstName} ${ldapUser.lastName}`,
+					).replace(
+						/[^\x00-\x7F]/g, // eslint-disable-line no-control-regex
+						' ',
+					),
 				],
 			}),
 			new Attribute({
