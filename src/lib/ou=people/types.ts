@@ -26,11 +26,6 @@ export type LdapUser = {
 	password?: string;
 
 	/**
-	 * Buffer
-	 */
-	picture?: Buffer[];
-
-	/**
 	 * School uid
 	 */
 	school?: string[] | string;

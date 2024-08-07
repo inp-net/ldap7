@@ -205,17 +205,6 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				);
 		}
 
-		if (ldapUser.picture)
-			changes.push(
-				new Change({
-					operation: 'replace',
-					modification: new Attribute({
-						type: 'jpegPhoto',
-						values: ldapUser.picture,
-					}),
-				}),
-			);
-
 		await client.modify(
 			`uid=${ldapUser.uid},ou=people,${base_dn}`,
 			changes,
@@ -333,15 +322,6 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 				new Attribute({
 					type: 'sshPublicKey',
 					values: ldapUser.sshKeys,
-				}),
-			);
-
-		// optional picture
-		if (ldapUser.picture)
-			newUser.push(
-				new Attribute({
-					type: 'jpegPhoto',
-					values: ldapUser.picture,
 				}),
 			);
 
