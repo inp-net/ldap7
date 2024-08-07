@@ -61,7 +61,7 @@ function hashPassword(password: string): string {
  *
  * If the user does not exist, it will be created. If no school is provided,
  * the user will be created with a home directory in /tmp and a shell set to
- * /bin/none. If a school is provided, the user will be created with a home
+ * /usr/sbin/nologin. If a school is provided, the user will be created with a home
  * and /bin/bash shell. If the user already exists, it will be updated.
  * @param ldapUser
  */
@@ -168,7 +168,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 
 			if (
 				user.homeDirectory === '/tmp' ||
-				user.loginShell === '/bin/none'
+				user.loginShell === '/usr/sbin/nologin'
 			) {
 				changes.push(
 					new Change({
@@ -284,7 +284,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			}),
 			new Attribute({
 				type: 'loginShell',
-				values: ['/bin/none'],
+				values: ['/usr/sbin/nologin'],
 			}),
 		];
 

@@ -86,7 +86,7 @@ test.serial('An user can be created', async (t) => {
 			gecos: latinize(user.firstName + ' ' + user.lastName),
 			gidNumber: '1000',
 			homeDirectory: '/tmp',
-			loginShell: '/bin/none',
+			loginShell: '/usr/sbin/nologin',
 		},
 		'User does not match the expected values',
 	);
@@ -109,7 +109,7 @@ test.serial('An user can be retrieved', async (t) => {
 			gecos: latinize(user.firstName + ' ' + user.lastName),
 			gidNumber: '1000',
 			homeDirectory: '/tmp',
-			loginShell: '/bin/none',
+			loginShell: '/usr/sbin/nologin',
 		},
 		'User does not match the expected values',
 	);
@@ -210,7 +210,7 @@ test.serial('A list of users can be synced', async (t) => {
 				gecos: latinize(user.firstName + ' ' + user.lastName),
 				gidNumber: '1000',
 				homeDirectory: '/tmp',
-				loginShell: '/bin/none',
+				loginShell: '/usr/sbin/nologin',
 			},
 			'User does not match the expected values',
 		);
