@@ -13,5 +13,5 @@ services:
       - LDAP_TLS_KEY_FILE=/certs/server-key.pem
       - LDAP_TLS_CA_FILE=/certs/client-ca.pem
       - LDAP_TLS_VERIFY_CLIENTS=allow
-    volumes:
-      - ${LDAP_CERTS_DIR:-./tests/certs}:/certs:ro
+      - LDAP_RESET=1
+

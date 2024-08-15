@@ -1,19 +1,28 @@
 #!/bin/bash -ex
 
-# Remove old configuration
-rm -rf /var/lib/ldap/* || true
+# Reset ldap if LDAP_RESET is set or if the database is empty
+if [ -z "$(ls -A /var/lib/ldap)" ] || [ -n "$LDAP_RESET" ]; then
+	LDAP_RESET=1
+fi
 
-# Generate slapd.conf
-/etc/ldap/utils/update-conf.sh
+if [ -n "$LDAP_RESET" ]; then
+	# Remove old configuration
+	rm -rf /var/lib/ldap/* || true
 
-# Import templates
-/etc/ldap/utils/bootstrap.sh
+	# Generate slapd.conf
+	/etc/ldap/utils/update-conf.sh
 
-# Create service account
-/etc/ldap/utils/create-service_account.sh <<EOF
+	# Import templates
+	/etc/ldap/utils/bootstrap.sh
+
+	# Create service account
+	/etc/ldap/utils/create-service_account.sh <<EOF
 churros
 ldapdev
 EOF
+
+fi
+
 
 # Start slapd
 /usr/sbin/slapd -d3 -s trace -f /etc/ldap/slapd.conf

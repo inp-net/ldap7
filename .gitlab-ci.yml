@@ -37,7 +37,7 @@ test:
     script:
         - apk add --no-cache go nodejs npm
         - go install github.com/tsaarni/certyaml/cmd/certyaml@v0.9.2
-        - ~/go/bin/certyaml -d tests/certs tests/certs/certs.yaml
+        - ~/go/bin/certyaml -d tests/openldap/files/certs tests/openldap/files/certs/certs.yaml
         - docker compose up -d
         - npm install -g corepack
         - corepack enable

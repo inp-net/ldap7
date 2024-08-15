@@ -9,6 +9,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
 COPY conf_ldap /etc/ldap
 COPY files /
 
+RUN rm -rf /var/lib/ldap/* || true
+
 EXPOSE 389 636
 
 CMD ["/docker-entrypoint.sh"]
