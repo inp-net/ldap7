@@ -1,7 +1,6 @@
-import cryptoRandomString from 'crypto-random-string';
 import latinize from 'latinize';
 import { Attribute, Change, Entry } from 'ldapts';
-import { sha512 } from 'sha512-crypt-ts';
+import { encrypt } from 'unixcrypt';
 
 import { Client } from '../../client.js';
 import { getLogger, isArray } from '../utils.js';
@@ -50,7 +49,7 @@ async function findNextUidNumber(
  * @param password
  */
 function hashPassword(password: string): string {
-	return `{CRYPT}${sha512.crypt(password, cryptoRandomString({ length: 16 }))}`;
+	return `{CRYPT}${encrypt(password)}`;
 }
 
 /**
