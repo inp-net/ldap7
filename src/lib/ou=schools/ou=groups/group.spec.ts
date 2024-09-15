@@ -45,7 +45,7 @@ test.serial('A group can be upserted', async (t) => {
 		createdGroup[0],
 		{
 			cn: 'inp-net-inp',
-			gidNumber: '1001',
+			gidNumber: '70001',
 			memberUid: undefined,
 		},
 		'The group was not created with the correct attributes',
@@ -70,7 +70,7 @@ test.serial('A group can be upserted', async (t) => {
 		updatedGroup[0],
 		{
 			cn: 'inp-net-inp',
-			gidNumber: '1001',
+			gidNumber: '70001',
 			memberUid: ['versairea', 'dreumonte'],
 		},
 		'The group was not created with the correct attributes',
@@ -95,7 +95,7 @@ test.serial('A group can be upserted', async (t) => {
 		updatedTwiceGroup[0],
 		{
 			cn: 'inp-net-inp',
-			gidNumber: '1001',
+			gidNumber: '70001',
 			memberUid: undefined,
 		},
 		'The group was not updated with the correct attributes',
@@ -177,7 +177,7 @@ test.serial('LdapGroups can be synced with a list of groups', async (t) => {
 			searchEntries.find((entry) => entry.cn === group.name),
 			{
 				cn: group.name,
-				gidNumber: (1000 + group.gidNumber).toString(),
+				gidNumber: (70000 + group.gidNumber).toString(),
 				memberUid: members,
 			},
 			'Groups were not synced correctly',

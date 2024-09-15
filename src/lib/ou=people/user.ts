@@ -14,7 +14,7 @@ import type { LdapUser } from './types.js';
  * @param max
  */
 async function findNextUidNumber(
-	min = 10000,
+	min = 70000,
 	max = 100000000,
 ): Promise<number> {
 	if (max >= 100000001) {
@@ -137,6 +137,14 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 					],
 				}),
 			}),
+			// TODO: remove this once applied once
+			new Change({
+				operation: 'replace',
+				modification: new Attribute({
+					type: 'gidNumber',
+					values: ['70000'],
+				}),
+			}),
 		];
 
 		if (ldapUser.password) {
@@ -203,6 +211,19 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 					}),
 				);
 		}
+
+		// TODO: remove this once applied once
+		if (Number(user.uidNumber) < 70000)
+			// If the user has a uidNumber lower than 70000, we need to update it since it's a reserved range
+			changes.push(
+				new Change({
+					operation: 'replace',
+					modification: new Attribute({
+						type: 'uidNumber',
+						values: [String(await findNextUidNumber())],
+					}),
+				}),
+			);
 
 		await client.modify(
 			`uid=${ldapUser.uid},ou=people,${base_dn}`,
@@ -271,7 +292,7 @@ async function upsertLdapUser(ldapUser: LdapUser): Promise<void> {
 			}),
 			new Attribute({
 				type: 'gidNumber',
-				values: ['1000'],
+				values: ['70000'],
 			}),
 			new Attribute({
 				type: 'homeDirectory',
