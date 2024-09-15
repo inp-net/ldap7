@@ -12,7 +12,7 @@
       "url": "https://github.com/LeGmask"
     }
   ],
-  "packageManager": "yarn@4.2.2",
+  "packageManager": "yarn@4.5.0",
   "version": "1.0.9",
   "description": "ldapts wrapper",
   "module": "build/module/client.js",
