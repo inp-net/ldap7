@@ -13,7 +13,7 @@
     }
   ],
   "packageManager": "yarn@4.5.0",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "ldapts wrapper",
   "module": "build/module/client.js",
   "homepage": "https://git.inpt.fr/inp-net/ldap7",
@@ -46,8 +46,7 @@
     "version": "standard-version",
     "reset-hard": "git clean -dfx && git reset --hard && yarn",
     "prepare-release": "run-s reset-hard test cov:check version",
-    "release": "run-s prepare-release && git push --follow-tags origin master && npm publish --access=public",
-    "publish": "git push --follow-tags origin master && npm publish --access=public"
+    "release": "run-s prepare-release && git push --follow-tags origin master && npm publish --access=public"
   },
   "engines": {
     "node": ">=10"
