@@ -41,14 +41,6 @@ async function upsertLdapGroup(group: LdapGroup) {
 						values: group.members,
 					}),
 				}),
-				// TODO: remove this once applied once
-				new Change({
-					operation: 'replace',
-					modification: new Attribute({
-						type: 'gidNumber',
-						values: [(70000 + group.gidNumber).toString()],
-					}),
-				}),
 			],
 		);
 	} else {
