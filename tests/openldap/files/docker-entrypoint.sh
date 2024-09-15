@@ -12,15 +12,21 @@ if [ -n "$LDAP_RESET" ]; then
 	# Generate slapd.conf
 	/etc/ldap/utils/update-conf.sh
 
-	# Import templates
-	/etc/ldap/utils/bootstrap.sh
+	# Migrate
+	cat > /etc/ldap/.ldapm << EOF
+LDAP_CONF=/etc/ldap/slapd.conf
+LDAP_DB=1
+EOF
+	/etc/ldap/ldapm
 
 	# Create service account
 	/etc/ldap/utils/create-service_account.sh <<EOF
 churros
 ldapdev
 EOF
-
+else
+	# Migrate
+	/etc/ldap/ldapm
 fi
 
 
